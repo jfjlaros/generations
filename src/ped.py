@@ -8,6 +8,7 @@ import sys
 
 class Individual() :
     """
+    Class for nodes that have a pointer to their direct ancestor.
     """
 
     def __init__(self, thisId, paternalId, maternalId, dnaId) :
@@ -64,7 +65,9 @@ class Individual() :
     
     def flagPath(self) :
         """
-        Flag the path from this node to the root of the tree.
+        Flag the path from this node to the root of the tree to make the
+        searchFlag() function able to figure out what the lowest common
+        ancestor is.
         """
     
         thisIndividual = self
@@ -77,12 +80,14 @@ class Individual() :
     
     def searchFlag(self) :
         """
-        Count the number of steps until we encounter a flag.
+        Count the number of steps until we encounter a flag, set by the
+        flagPath() function.
 
         The flag is disabled to let the clearPath() function know where the
-        common ancestor is.
+        lowest common ancestor is.
 
-        @returns: The number of steps from this node to the common ancestor.
+        @returns: The number of steps from this node to the lowest common
+            ancestor.
         @rtype  : integer
         """
     
@@ -102,10 +107,11 @@ class Individual() :
     def clearPath(self) :
         """
         Remove the flags on the path that was made by the flagPath() function.
-        If a disabled flag is found, we have found the common ancestor and 
-        memorise the number of steps that were taken so far.
+        If a disabled flag is found, we have found the lowest common ancestor
+        and memorise the number of steps that were taken so far.
 
-        @returns: The number of steps from this node to the common ancestor.
+        @returns: The number of steps from this node to the lowest common
+            ancestor.
         @rtype  : integer
         """
     
@@ -129,12 +135,21 @@ def distance(person, id1, id2) :
     """
     Calculate the distance between two individuals.
 
+        - Mark the path from individual 1 to the root.
+        - Count the number of steps to the path when walking from individual 2
+          to the root.
+            - Undo the marking at the lowest common ancestor.
+        - Count the number of marked nodes when walking from individual 2 to
+          the root again.
+            - Remove the rest of the markings.
+        - Add the two numbers.
+
     @arg person  : Dictionary of Individual instances, indexed by id.
     @type person : dictionary
-    @arg     id1 : Id of a person.
-    @type    id1 : integer
-    @arg     id2 : Id of a person.
-    @type    id2 : integer
+    @arg id1     : Id of a person.
+    @type id1    : integer
+    @arg id2     : Id of a person.
+    @type id2    : integer
     """
 
     person[id1].flagPath()
@@ -142,16 +157,16 @@ def distance(person, id1, id2) :
 #distance
 
 if __name__ == "__main__" :
-    person = {}
-    root = Individual(0, 0, 0, 0)
-    person[0] = root
+    person = {}                   # A dictionary for the data.
+    root = Individual(0, 0, 0, 0) # A root node for the tree.
+    person[0] = root              # Add the root to the dictionary.
 
+    # Parse the input file and store the data in a dictionary.
     handle = open(sys.argv[1], 'r')
     line = handle.readline()
     while line :
         data = line[:-1].split(',') # Ignore the last character ('\n').
-        thisIndividual = Individual(data[1], data[2], data[3], data[4])
-        person[int(data[1])] = thisIndividual
+        person[int(data[1])] = Individual(data[1], data[2], data[3], data[4])
         line = handle.readline()
     #while
     handle.close()
@@ -161,16 +176,16 @@ if __name__ == "__main__" :
         person[i].link = person[person[i].paternalId]
 
     # Print the matrix.
-    print 0,
-    for i in person.keys() :
-        if person[i].dnaId :
+    print 0,                         # Just a filler for (0,0).
+    for i in person.keys() :         # Print the first line of id's.
+        if person[i].dnaId :         # Filter for individuals that have a dnaId.
             print person[i].dnaId, 
     print
     for i in person.keys() :
-        if person[i].dnaId :
-            print person[i].dnaId, 
+        if person[i].dnaId :         # Filter for individuals that have a dnaId.
+            print person[i].dnaId,   # Print the first column of id's.
             for j in person.keys() :
-                if person[j].dnaId :
+                if person[j].dnaId : # Filter for individuals that have a dnaId.
                     print distance(person, person[i].thisId, person[j].thisId),
             print
         #if
