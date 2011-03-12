@@ -179,18 +179,23 @@ if __name__ == "__main__" :
     for i in person.keys() :
         person[i].link = person[person[i].paternalId]
 
-    # Print the matrix.
-    print 0,                         # Just a filler for (0,0).
-    for i in person.keys() :         # Print the first line of id's.
-        if person[i].dnaId :         # Filter for individuals that have a dnaId.
-            print person[i].dnaId, 
-    print
+    # Filter out everything without a dnaId.
     for i in person.keys() :
-        if person[i].dnaId :         # Filter for individuals that have a dnaId.
-            print person[i].dnaId,   # Print the first column of id's.
-            for j in person.keys() :
-                if person[j].dnaId : # Filter for individuals that have a dnaId.
-                    print distance(person, person[i].thisId, person[j].thisId),
-            print
-        #if
+        if not person[i].dnaId :
+            person.pop(i)
+
+    # Print the matrix.
+    print "0\t",                        # Just a filler for (0,0).
+    for i in person.keys()[:-1] :       # Print the first line of id's.
+        print "%i\t" % person[i].dnaId,
+    print person[person.keys()[-1]].dnaId
+
+    for i in person.keys() :            # Print the content of the matrix.
+        print "%i\t" % person[i].dnaId, # Print the first column of id's.
+        for j in person.keys()[:-1] :
+            print "%i\t" % distance(
+                person, person[i].thisId, person[j].thisId),
+        print distance(person, person[i].thisId, 
+            person[person.keys()[-1]].thisId)
+    #for
 #if

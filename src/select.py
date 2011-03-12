@@ -1,7 +1,12 @@
 #!/usr/bin/python
 
-import random # randint()
+"""
+@requires: sys
+@requires: random
+"""
+
 import sys    # argv[]
+import random # randint()
 
 maxDist = 100
 
@@ -121,11 +126,17 @@ def pickPersons(families, number) :
     myFamilies = dict(families)
     selection = []
 
+    #printFamilies(myFamilies)
     for i in range(number) :
         pick = myFamilies.keys()[random.randint(0, len(myFamilies.keys()) - 1)]
         selection.append(pick)
         for j in myFamilies[pick] :
-            myFamilies.pop(j)
+            if not len(myFamilies.keys()) :
+                print "Error: Families depleted, exiting."
+                sys.exit(1)
+            #if
+            if myFamilies.has_key(j) : # A family member can already be removed
+                myFamilies.pop(j)      # by removing a remote family member.
         #print pick
         #printFamilies(myFamilies)
     #for
