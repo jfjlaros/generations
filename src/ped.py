@@ -6,6 +6,8 @@
 
 import sys
 
+defaultDepth = 100
+
 class Individual() :
     """
     Class for nodes that have a pointer to their direct ancestor.
@@ -102,6 +104,8 @@ class Individual() :
             thisIndividual = thisIndividual.link
             numberOfSteps += 1
         #while
+
+        return defaultDepth / 2
     #searchFlag
     
     def clearPath(self) :
@@ -116,7 +120,7 @@ class Individual() :
         """
     
         numberOfSteps = 0
-        depth = 0
+        depth = defaultDepth / 2
         thisIndividual = self
         
         while thisIndividual != thisIndividual.link :
