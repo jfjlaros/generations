@@ -1,22 +1,23 @@
 #!/usr/bin/python
 
 """
-@requires: sys
-@requires: random
+Make a selection of people in a distance matrix. The distance is the number
+of generations that separates them.
 """
 
 import sys    # argv[]
 import random # randint()
+import argparse
 
 maxDist = 100
 
-def loadMatrix(fileName) :
+def loadMatrix(handle) :
     """
     Load the content of a file into a matrix and a structure that contains the
     IDs with a pointer to the corresponding row in the matrix.
 
-    @arg fileName: Name of a file that contains an n*m matrix.
-    @type fileName: string
+    @arg handle: Handle to an open file that contains an n*m matrix.
+    @type fileName: handle
 
     @returns: A dictionary with the IDs pointing to the rows and an n*m matrix.
     @rtype: (list(integer), list(list(float)))
@@ -25,8 +26,6 @@ def loadMatrix(fileName) :
     personId = []
     matrix = []
     lines = 0
-
-    handle = open(fileName, "r")
 
     line = handle.readline()
     line = handle.readline()
@@ -42,8 +41,6 @@ def loadMatrix(fileName) :
         line = handle.readline()
         lines += 1
     #while
-
-    handle.close()
 
     return personId, matrix
 #loadMatrix
@@ -144,15 +141,21 @@ def pickPersons(families, number) :
     return selection
 #pickPersons
 
-if __name__ == "__main__" :
-    fileName = sys.argv[1]
-    distance = int(sys.argv[2])
-    selectionSize = int(sys.argv[3])
-    numberOfSelections = int(sys.argv[4])
-    
+def select(handle, distance, selectionSize, numberOfSelections) :
+    """
+    @arg handle:
+    @arg handle:
+    @arg distance:
+    @arg distance:
+    @arg selectionSize:
+    @arg selectionSize:
+    @arg numberOfSelections:
+    @arg numberOfSelections:
+    """
+
     random.seed()
-    
-    personId, matrix = loadMatrix(fileName)
+
+    personId, matrix = loadMatrix(handle)
     #printMatrix(matrix)
     families = makeFamilies(personId, matrix, distance)
     #printFamilies(families)
@@ -162,4 +165,28 @@ if __name__ == "__main__" :
             print j,
         print
     #for
+#select
+
+if __name__ == "__main__" :
+    """
+    Main entry point.
+    """
+
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=__doc__.split('\n\n\n')[0],
+        epilog='')
+
+    parser.add_argument("input", metavar="INPUT_FILE",
+        type=argparse.FileType('r'), help="file used as input")
+    parser.add_argument("-d", dest="distance", type=int, default=1,
+        help="distance in generations (%(type)s default: %(default)s)")
+    parser.add_argument("-z", dest="size", type=int, default=1,
+        help="selection size (%(type)s default: %(default)s)")
+    parser.add_argument("-s", dest="selections", type=int, default=1,
+        help="number of selections (%(type)s default: %(default)s)")
+
+    args = parser.parse_args()
+
+    select(args.input, args.distance, args.size, args.selections)
 #if
